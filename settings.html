@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pengaturan Bisnis & CoA — Kronos Ledger</title>
+  <meta name="description" content="Setup bisnis sesuai jenis usaha, manajemen Chart of Accounts (CoA), dan pengaturan tim RBAC Kronos Ledger." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] },
+          colors: {
+            canvas: '#F3F4F1',
+            brand: { dark: '#14281D', lime: '#9FE870' }
+          }
+        }
+      }
+    };
+  </script>
+
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="bg-[#F3F4F1] text-[#111827] antialiased selection:bg-[#9FE870] selection:text-[#14281D]">
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-30 bg-[#F3F4F1]/90 backdrop-blur-md border-b border-gray-200/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-wrap items-center justify-between gap-3 py-3.5">
+
+        <div class="flex items-center gap-4 lg:gap-7">
+          <a href="index.html" data-nav-link class="flex items-center gap-2.5 group">
+            <div class="w-9 h-9 rounded-2xl bg-[#14281D] text-[#9FE870] flex items-center justify-center font-bold text-base shadow-sm">
+              K
+            </div>
+            <div class="leading-tight">
+              <span class="block text-sm sm:text-base font-bold tracking-tight text-[#14281D]">Kronos Ledger</span>
+              <span class="block text-[11px] font-medium text-gray-500">Cloud Accounting &amp; Mini-ERP</span>
+            </div>
+          </a>
+
+          <nav aria-label="Navigasi Utama" class="hidden lg:flex items-center gap-1 bg-white border border-gray-200 rounded-full p-1">
+            <a href="index.html" data-nav-link class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-medium text-gray-600">Overview</a>
+            <a href="ledger.html" data-nav-link class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-medium text-gray-600">Buku Besar</a>
+            <a href="invoices.html" data-nav-link class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-medium text-gray-600">Invoice</a>
+            <a href="inventory.html" data-nav-link class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-medium text-gray-600">Inventori</a>
+            <a href="reports.html" data-nav-link class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-medium text-gray-600">Laporan</a>
+            <a href="audit-logs.html" data-nav-link class="nav-pill px-3.5 py-1.5 rounded-full text-xs font-medium text-gray-600">Audit Log</a>
+            <a href="settings.html" data-nav-link class="nav-pill is-active px-3.5 py-1.5 rounded-full text-xs font-semibold">Pengaturan</a>
+          </nav>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
+          <div class="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-3 py-1.5 text-xs font-medium text-gray-700">
+            <span id="connection-dot" class="w-2 h-2 rounded-full bg-[#14281D]"></span>
+            <span id="connection-label">Memuat...</span>
+          </div>
+
+          <div class="segmented-control" role="group" aria-label="Mode Aplikasi">
+            <button id="mode-demo-btn" type="button" class="segmented-btn is-selected">Demo</button>
+            <button id="mode-live-btn" type="button" class="segmented-btn">Live</button>
+          </div>
+
+          <select id="org-switcher" aria-label="Pilih Organisasi" class="bg-white border border-gray-200 rounded-full px-3 py-1.5 text-xs font-semibold text-[#14281D] max-w-[180px] sm:max-w-[220px] truncate cursor-pointer">
+            <option value="">Memuat organisasi...</option>
+          </select>
+
+          <button id="btn-reset-demo" type="button" class="hidden sm:inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-[#14281D] hover:border-gray-300 transition">
+            Reset Demo
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Horizontal Nav -->
+      <nav aria-label="Navigasi Mobile" class="flex lg:hidden items-center gap-1.5 overflow-x-auto pb-3 -mx-1 px-1">
+        <a href="index.html" data-nav-link class="nav-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-gray-200 text-gray-600">Overview</a>
+        <a href="ledger.html" data-nav-link class="nav-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-gray-200 text-gray-600">Buku Besar</a>
+        <a href="invoices.html" data-nav-link class="nav-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-gray-200 text-gray-600">Invoice</a>
+        <a href="inventory.html" data-nav-link class="nav-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-gray-200 text-gray-600">Inventori</a>
+        <a href="reports.html" data-nav-link class="nav-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-gray-200 text-gray-600">Laporan</a>
+        <a href="audit-logs.html" data-nav-link class="nav-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-gray-200 text-gray-600">Audit Log</a>
+        <a href="settings.html" data-nav-link class="nav-pill is-active shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold">Pengaturan</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
+
+    <!-- Status / Fallback Banner -->
+    <div id="status-banner" class="hidden rounded-2xl border px-4 py-3 text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="flex items-start sm:items-center gap-2.5">
+        <span class="mt-0.5 sm:mt-0 w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
+        <p id="status-banner-text" class="leading-relaxed"></p>
+      </div>
+      <button id="banner-dismiss-btn" type="button" class="text-xs font-semibold text-gray-600 hover:text-gray-900 px-2 py-1 self-end sm:self-auto">Tutup</button>
+    </div>
+
+    <!-- Page Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Konfigurasi Multi-Tenant</p>
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[#14281D] mt-0.5">Pengaturan Bisnis &amp; CoA</h1>
+        <p class="text-xs sm:text-sm text-gray-500 mt-1">
+          Organisasi aktif: <strong id="active-org-heading" class="text-[#14281D]">Memuat...</strong>
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <span id="active-role-pill" class="inline-flex items-center gap-1.5 bg-white border border-gray-200 rounded-full px-3 py-1.5 text-xs text-gray-600">
+          Peran: <strong class="text-[#14281D]">Owner</strong>
+        </span>
+        <button id="btn-open-coa-modal" type="button" class="inline-flex items-center gap-1.5 rounded-full bg-white border border-gray-200 text-[#14281D] px-4 py-2 text-xs sm:text-sm font-semibold hover:bg-gray-50 transition">
+          + Akun CoA
+        </button>
+        <button id="btn-open-new-org-modal" type="button" class="inline-flex items-center gap-1.5 rounded-full bg-[#14281D] text-[#9FE870] px-4 py-2 text-xs sm:text-sm font-semibold hover:bg-[#1e3a2b] transition shadow-sm">
+          + Setup Bisnis Baru
+        </button>
+      </div>
+    </div>
+
+    <!-- Section Switcher Tabs -->
+    <section aria-label="Kategori Pengaturan" class="flex flex-wrap items-center gap-2">
+      <button type="button" data-settings-tab="PROFILE" class="settings-tab-btn rounded-full px-4 py-2 text-xs font-semibold bg-[#14281D] text-[#9FE870] transition">
+        Profil &amp; Jenis Usaha
+      </button>
+      <button type="button" data-settings-tab="COA" class="settings-tab-btn rounded-full px-4 py-2 text-xs font-semibold bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition">
+        Chart of Accounts (CoA)
+      </button>
+      <button type="button" data-settings-tab="TEAM" class="settings-tab-btn rounded-full px-4 py-2 text-xs font-semibold bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition">
+        Tim &amp; Role RBAC
+      </button>
+    </section>
+
+    <!-- PANEL 1: Business Profile & Presets -->
+    <section id="panel-profile" class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <div class="lg:col-span-7 bento-card p-5 sm:p-6">
+        <div class="flex items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 class="text-base font-bold text-[#14281D]">Profil Organisasi Aktif</h2>
+            <p class="text-xs text-gray-500 mt-0.5">Informasi ini dipakai pada header invoice, laporan keuangan, dan perhitungan pajak bawaan.</p>
+          </div>
+          <span id="profile-business-badge" class="status-badge badge-posted">Retail &amp; Dagang</span>
+        </div>
+
+        <form id="org-profile-form" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div>
+              <label for="prof-name" class="block text-xs font-semibold text-gray-600 mb-1">Nama Bisnis / Perusahaan</label>
+              <input id="prof-name" type="text" required class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-[#14281D]" />
+            </div>
+            <div>
+              <label for="prof-type" class="block text-xs font-semibold text-gray-600 mb-1">Tipe Usaha</label>
+              <select id="prof-type" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-[#14281D] bg-white">
+                <option value="service">Jasa &amp; Agensi</option>
+                <option value="retail">Retail &amp; Dagang</option>
+                <option value="fnb">F&amp;B / Kafe</option>
+                <option value="workshop">Bengkel &amp; Servis</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <div>
+              <label for="prof-currency" class="block text-xs font-semibold text-gray-600 mb-1">Mata Uang Dasar</label>
+              <select id="prof-currency" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-[#14281D] bg-white">
+                <option value="IDR">IDR (Rupiah)</option>
+                <option value="USD">USD (US Dollar)</option>
+              </select>
+            </div>
+            <div>
+              <label for="prof-tax" class="block text-xs font-semibold text-gray-600 mb-1">Tarif Pajak / PPN (%)</label>
+              <input id="prof-tax" type="number" min="0" max="100" step="0.1" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-[#14281D] tabular-nums" />
+            </div>
+            <div>
+              <label for="prof-target" class="block text-xs font-semibold text-gray-600 mb-1">Target Omzet Bulanan</label>
+              <input id="prof-target" type="number" min="0" step="100000" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-[#14281D] tabular-nums" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div>
+              <label for="prof-email" class="block text-xs font-semibold text-gray-600 mb-1">Email Keuangan / Invoice</label>
+              <input id="prof-email" type="email" placeholder="finance@perusahaan.id" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-[#14281D]" />
+            </div>
+            <div>
+              <label for="prof-phone" class="block text-xs font-semibold text-gray-600 mb-1">Nomor Telepon / WhatsApp</label>
+              <input id="prof-phone" type="text" placeholder="+62 812-xxxx-xxxx" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-[#14281D]" />
+            </div>
+          </div>
+
+          <div>
+            <label for="prof-address" class="block text-xs font-semibold text-gray-600 mb-1">Alamat Bisnis (Tampil di Invoice)</label>
+            <textarea id="prof-address" rows="2" placeholder="Jl. Contoh No. 123, Kota..." class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-[#14281D]"></textarea>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-2">
+            <button type="submit" class="rounded-full bg-[#14281D] text-[#9FE870] px-5 py-2.5 text-xs sm:text-sm font-semibold hover:bg-[#1e3a2b] transition">
+              Simpan Perubahan Profil
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Right Column: Multi-Business Presets Overview -->
+      <div class="lg:col-span-5 space-y-4">
+        <div class="bento-card p-5 sm:p-6 bg-[#14281D] text-white border-[#14281D]">
+          <p class="text-xs font-semibold uppercase tracking-wider text-[#9FE870]">Multi-Tenant Onboarding</p>
+          <h2 class="text-lg font-bold mt-1">Tambah Unit Bisnis Baru</h2>
+          <p class="text-xs text-gray-300 mt-1.5 leading-relaxed">
+            Buat organisasi terpisah dengan preset Chart of Accounts (CoA) dan katalog produk awal yang disesuaikan untuk jenis usaha Anda.
+          </p>
+          <div class="grid grid-cols-2 gap-2.5 mt-4">
+            <button type="button" data-quick-preset="service" class="text-left rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 p-3 transition">
+              <p class="text-xs font-bold text-[#9FE870]">Jasa &amp; Agensi</p>
+              <p class="text-[11px] text-gray-300 mt-0.5">Retainer, Cloud, Freelance</p>
+            </button>
+            <button type="button" data-quick-preset="retail" class="text-left rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 p-3 transition">
+              <p class="text-xs font-bold text-[#9FE870]">Retail &amp; Dagang</p>
+              <p class="text-[11px] text-gray-300 mt-0.5">SKU, Kemasan, Logistik</p>
+            </button>
+            <button type="button" data-quick-preset="fnb" class="text-left rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 p-3 transition">
+              <p class="text-xs font-bold text-[#9FE870]">F&amp;B / Kafe</p>
+              <p class="text-[11px] text-gray-300 mt-0.5">Bahan Baku, Dine-in, Gas</p>
+            </button>
+            <button type="button" data-quick-preset="workshop" class="text-left rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 p-3 transition">
+              <p class="text-xs font-bold text-[#9FE870]">Bengkel &amp; Servis</p>
+              <p class="text-[11px] text-gray-300 mt-0.5">Suku Cadang, Jasa Servis</p>
+            </button>
+          </div>
+        </div>
+
+        <div class="bento-card p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-[#14281D]">Daftar Organisasi Anda</h3>
+            <span id="org-count-badge" class="text-xs font-semibold text-gray-500 tabular-nums">0 Bisnis</span>
+          </div>
+          <div id="org-list-cards" class="space-y-2.5"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 2: Chart of Accounts (CoA) -->
+    <section id="panel-coa" class="hidden space-y-4">
+      <div class="bento-card p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-1.5" role="group" aria-label="Filter Kategori CoA">
+          <button type="button" data-coa-cat="ALL" class="coa-cat-btn rounded-full px-3 py-1.5 text-xs font-semibold bg-[#14281D] text-[#9FE870]">Semua</button>
+          <button type="button" data-coa-cat="ASSET" class="coa-cat-btn rounded-full px-3 py-1.5 text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200">Aset</button>
+          <button type="button" data-coa-cat="LIABILITY" class="coa-cat-btn rounded-full px-3 py-1.5 text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200">Liabilitas</button>
+          <button type="button" data-coa-cat="EQUITY" class="coa-cat-btn rounded-full px-3 py-1.5 text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200">Ekuitas</button>
+          <button type="button" data-coa-cat="REVENUE" class="coa-cat-btn rounded-full px-3 py-1.5 text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200">Pendapatan</button>
+          <button type="button" data-coa-cat="COGS" class="coa-cat-btn rounded-full px-3 py-1.5 text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200">HPP</button>
+          <button type="button" data-coa-cat="EXPENSE" class="coa-cat-btn rounded-full px-3 py-1.5 text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200">Beban</button>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <input id="coa-search" type="search" placeholder="Cari kode atau nama akun..." class="rounded-full border border-gray-200 bg-gray-50 px-3.5 py-1.5 text-xs text-gray-700 w-52 sm:w-64" />
+          <button id="btn-open-coa-modal-2" type="button" class="rounded-full bg-[#14281D] text-[#9FE870] px-4 py-1.5 text-xs font-semibold hover:bg-[#1e3a2b] transition">
+            + Tambah Akun CoA
+          </button>
+        </div>
+      </div>
+
+      <div class="bento-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="kronos-table w-full text-left border-collapse">
+            <thead>
+              <tr>
+                <th>Kode</th>
+                <th>Nama Akun</th>
+                <th>Kategori</th>
+                <th>Saldo Normal</th>
+                <th>Tipe</th>
+                <th class="text-right">Saldo Saat Ini</th>
+              </tr>
+            </thead>
+            <tbody id="coa-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 3: Team & RBAC -->
+    <section id="panel-team" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <div class="lg:col-span-8 bento-card overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-100 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base font-bold text-[#14281D]">Anggota Tim Organisasi</h2>
+            <p class="text-xs text-gray-500">Kontrol akses berbasis peran (Role-Based Access Control) sesuai kebijakan RLS PostgreSQL.</p>
+          </div>
+          <span id="member-count-badge" class="text-xs font-semibold text-gray-500 tabular-nums">0 Anggota</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="kronos-table w-full text-left border-collapse">
+            <thead>
+              <tr>
+                <th>Anggota</th>
+                <th>Role RBAC</th>
+                <th>Bergabung</th>
+                <th class="text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="team-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="lg:col-span-4 space-y-4">
+        <div class="bento-card p-5">
+          <h3 class="text-sm font-bold text-[#14281D] mb-1">Tambah Anggota Tim</h3>
+          <p class="text-xs text-gray-500 mb-3">Simulasi penambahan anggota pada Mode Demo (di Mode Live gunakan undangan user_id Supabase).</p>
+          <form id="add-member-form" class="space-y-3">
+            <div>
+              <label for="mem-name" class="block text-xs font-semibold text-gray-600 mb-1">Nama Lengkap</label>
+              <input id="mem-name" type="text" required placeholder="Contoh: Budi Santoso" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-xs sm:text-sm" />
+            </div>
+            <div>
+              <label for="mem-email" class="block text-xs font-semibold text-gray-600 mb-1">Email</label>
+              <input id="mem-email" type="email" required placeholder="budi@perusahaan.id" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-xs sm:text-sm" />
+            </div>
+            <div>
+              <label for="mem-role" class="block text-xs font-semibold text-gray-600 mb-1">Role</label>
+              <select id="mem-role" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-xs sm:text-sm bg-white">
+                <option value="staff">Staff (Input Pengajuan PENDING)</option>
+                <option value="accountant">Accountant (Posting, Approve, Laporan)</option>
+                <option value="owner">Owner (Akses Penuh &amp; Kelola Tim)</option>
+              </select>
+            </div>
+            <button type="submit" class="w-full rounded-full bg-[#14281D] text-[#9FE870] px-4 py-2 text-xs font-semibold hover:bg-[#1e3a2b] transition">
+              + Tambahkan ke Tim
+            </button>
+          </form>
+        </div>
+
+        <div class="bento-card p-5">
+          <h3 class="text-sm font-bold text-[#14281D] mb-2.5">Matriks Hak Akses RBAC</h3>
+          <div class="space-y-2.5 text-xs">
+            <div class="rounded-xl bg-gray-50 p-3 border border-gray-100">
+              <span class="font-bold text-[#14281D]">Owner</span>
+              <p class="text-gray-600 mt-0.5">Akses penuh: pengaturan organisasi, kelola tim, tambah CoA, approve/void jurnal, invoice &amp; audit log.</p>
+            </div>
+            <div class="rounded-xl bg-gray-50 p-3 border border-gray-100">
+              <span class="font-bold text-[#14281D]">Accountant</span>
+              <p class="text-gray-600 mt-0.5">Catat jurnal POSTED, approve pengajuan staff, void transaksi, kelola invoice, stok, dan laporan keuangan.</p>
+            </div>
+            <div class="rounded-xl bg-gray-50 p-3 border border-gray-100">
+              <span class="font-bold text-[#14281D]">Staff</span>
+              <p class="text-gray-600 mt-0.5">Ajukan transaksi berstatus PENDING, buat draft invoice, dan lihat katalog stok tanpa mengubah konfigurasi sistem.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL: Setup New Business / Organization -->
+  <div id="new-org-modal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div class="modal-panel bg-white rounded-3xl border border-gray-200 shadow-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-[#14281D]">Setup Bisnis &amp; Organisasi Baru</h2>
+          <p class="text-xs text-gray-500">Pilih jenis usaha untuk otomatis menyiapkan CoA dan katalog produk awal.</p>
+        </div>
+        <button id="close-new-org-modal" type="button" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-sm">✕</button>
+      </div>
+
+      <form id="new-org-form" class="p-6 space-y-4 overflow-y-auto">
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 mb-2">1. Pilih Tipe Bisnis</label>
+          <div id="preset-selector-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+          <input id="new-org-type" type="hidden" value="retail" />
+        </div>
+
+        <div id="preset-preview-box" class="rounded-2xl bg-[#F3F4F1] border border-gray-200 p-3.5 text-xs space-y-1.5"></div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="new-org-name" class="block text-xs font-semibold text-gray-600 mb-1">Nama Bisnis / Usaha *</label>
+            <input id="new-org-name" type="text" required placeholder="Contoh: Kopi Senja Nusantara" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label for="new-org-capital" class="block text-xs font-semibold text-gray-600 mb-1">Modal Awal Bank (Opsional)</label>
+            <input id="new-org-capital" type="number" min="0" step="100000" value="25000000" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm tabular-nums" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label for="new-org-currency" class="block text-xs font-semibold text-gray-600 mb-1">Mata Uang</label>
+            <select id="new-org-currency" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm bg-white">
+              <option value="IDR">IDR</option>
+              <option value="USD">USD</option>
+            </select>
+          </div>
+          <div>
+            <label for="new-org-tax" class="block text-xs font-semibold text-gray-600 mb-1">Tarif Pajak (%)</label>
+            <input id="new-org-tax" type="number" min="0" max="100" step="0.1" value="11" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm tabular-nums" />
+          </div>
+          <div>
+            <label for="new-org-email" class="block text-xs font-semibold text-gray-600 mb-1">Email Bisnis</label>
+            <input id="new-org-email" type="email" placeholder="owner@bisnis.id" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="new-org-phone" class="block text-xs font-semibold text-gray-600 mb-1">Telepon / WhatsApp</label>
+            <input id="new-org-phone" type="text" placeholder="+62 812..." class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label for="new-org-address" class="block text-xs font-semibold text-gray-600 mb-1">Alamat Singkat</label>
+            <input id="new-org-address" type="text" placeholder="Jakarta / Bandung..." class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm" />
+          </div>
+        </div>
+
+        <p id="new-org-error" class="hidden text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2"></p>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
+          <button id="cancel-new-org-modal" type="button" class="rounded-full border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50">Batal</button>
+          <button type="submit" class="rounded-full bg-[#14281D] text-[#9FE870] px-5 py-2 text-xs font-semibold hover:bg-[#1e3a2b] transition">Buat &amp; Aktifkan Bisnis</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Add New CoA Account -->
+  <div id="coa-modal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div class="modal-panel bg-white rounded-3xl border border-gray-200 shadow-2xl w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-[#14281D]">Tambah Akun CoA Baru</h2>
+          <p class="text-xs text-gray-500">Akun langsung tersedia di Jurnal Umum, Buku Besar, dan Laporan Keuangan.</p>
+        </div>
+        <button id="close-coa-modal" type="button" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-sm">✕</button>
+      </div>
+
+      <form id="coa-form" class="p-6 space-y-4 overflow-y-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label for="coa-code" class="block text-xs font-semibold text-gray-600 mb-1">Kode Akun *</label>
+            <input id="coa-code" type="text" required placeholder="1105" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm uppercase font-mono" />
+          </div>
+          <div class="sm:col-span-2">
+            <label for="coa-name" class="block text-xs font-semibold text-gray-600 mb-1">Nama Akun *</label>
+            <input id="coa-name" type="text" required placeholder="Bank Mandiri Operasional" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label for="coa-category" class="block text-xs font-semibold text-gray-600 mb-1">Kategori Akun *</label>
+            <select id="coa-category" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm bg-white">
+              <option value="ASSET">ASSET (Aset — Normal Debit)</option>
+              <option value="LIABILITY">LIABILITY (Liabilitas — Normal Kredit)</option>
+              <option value="EQUITY">EQUITY (Ekuitas — Normal Kredit)</option>
+              <option value="REVENUE">REVENUE (Pendapatan — Normal Kredit)</option>
+              <option value="COGS">COGS (HPP — Normal Debit)</option>
+              <option value="EXPENSE">EXPENSE (Beban — Normal Debit)</option>
+            </select>
+          </div>
+          <div>
+            <label for="coa-opening" class="block text-xs font-semibold text-gray-600 mb-1">Saldo Awal (Opsional)</label>
+            <input id="coa-opening" type="number" min="0" step="1000" value="0" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm tabular-nums" />
+          </div>
+        </div>
+
+        <div>
+          <label for="coa-counter" class="block text-xs font-semibold text-gray-600 mb-1">Akun Lawan Saldo Awal (Agar Double-Entry Seimbang)</label>
+          <select id="coa-counter" class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm bg-white"></select>
+          <p id="coa-journal-hint" class="text-[11px] text-gray-500 mt-1">Jika saldo awal &gt; 0, sistem otomatis mencatat jurnal pembuka berimbang.</p>
+        </div>
+
+        <p id="coa-error" class="hidden text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2"></p>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
+          <button id="cancel-coa-modal" type="button" class="rounded-full border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50">Batal</button>
+          <button type="submit" class="rounded-full bg-[#14281D] text-[#9FE870] px-5 py-2 text-xs font-semibold hover:bg-[#1e3a2b] transition">Simpan Akun CoA</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm"></div>
+
+  <script type="module" src="assets/js/settings.js"></script>
+</body>
+</html>

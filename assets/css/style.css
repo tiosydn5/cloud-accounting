@@ -1,0 +1,361 @@
+/* ============================================================================
+   KRONOS LEDGER — assets/css/style.css
+   Industrial-Clean Bento Design System & Responsive Mobile Utilities
+   ============================================================================ */
+
+:root {
+  --bg-canvas: #F3F4F1;
+  --bg-surface: #FFFFFF;
+  --border-subtle: #E5E7EB;
+  --brand-dark: #14281D;
+  --brand-dark-hover: #1D3A2A;
+  --brand-accent: #9FE870;
+  --brand-accent-soft: #E9FAD9;
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --semantic-debit: #15803D;
+  --semantic-credit: #DC2626;
+  --semantic-warn: #D97706;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  margin: 0;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Smooth custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Bento Surface Cards */
+.bento-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.03), 0 8px 24px -12px rgba(20, 40, 29, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.bento-card:hover {
+  box-shadow: 0 2px 6px rgba(17, 24, 39, 0.04), 0 14px 32px -14px rgba(20, 40, 29, 0.1);
+}
+
+.bento-card-lime {
+  background: linear-gradient(150deg, #A9EF7B 0%, #9FE870 55%, #8EDE5B 100%);
+  border: 1px solid rgba(20, 40, 29, 0.12);
+  border-radius: 24px;
+  color: var(--brand-dark);
+  box-shadow: 0 12px 28px -14px rgba(20, 40, 29, 0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bento-card-lime:hover {
+  box-shadow: 0 16px 34px -14px rgba(20, 40, 29, 0.28);
+}
+
+/* Navigation Pill Bar */
+.nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.nav-pill:hover {
+  background-color: #F3F4F6;
+  color: var(--text-primary);
+}
+
+.nav-pill.is-active {
+  background-color: var(--brand-dark);
+  color: #FFFFFF;
+}
+
+.nav-pill.is-active .nav-dot {
+  background-color: var(--brand-accent);
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--brand-dark);
+  color: #FFFFFF;
+  font-weight: 500;
+  border-radius: 9999px;
+  transition: background-color 0.18s ease, transform 0.15s ease, opacity 0.15s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--brand-dark-hover);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #F9FAFB;
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  font-weight: 500;
+  border-radius: 9999px;
+  transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #F3F4F6;
+  border-color: #D1D5DB;
+  transform: translateY(-1px);
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.18rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.badge-posted,
+.badge-paid {
+  background-color: #DCFCE7;
+  color: #15803D;
+}
+
+.badge-pending,
+.badge-sent {
+  background-color: #FEF3C7;
+  color: #B45309;
+}
+
+.badge-overdue,
+.badge-void {
+  background-color: #FEE2E2;
+  color: #DC2626;
+}
+
+.badge-draft {
+  background-color: #F3F4F6;
+  color: #4B5563;
+}
+
+/* Segmented Mode / Currency Toggle */
+.segmented-control {
+  display: inline-flex;
+  align-items: center;
+  background-color: #F3F4F1;
+  border: 1px solid var(--border-subtle);
+  border-radius: 9999px;
+  padding: 0.2rem;
+}
+
+.segmented-btn {
+  padding: 0.25rem 0.7rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.segmented-btn.is-selected {
+  background-color: var(--brand-dark);
+  color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* Modal Backdrop & Entry Transition */
+.modal-backdrop {
+  background-color: rgba(17, 24, 39, 0.52);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-panel {
+  animation: modalSlideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Inputs & Selects */
+.kronos-input {
+  width: 100%;
+  background-color: #FFFFFF;
+  border: 1px solid #D1D5DB;
+  border-radius: 0.875rem;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.kronos-input:focus {
+  border-color: var(--brand-dark);
+  box-shadow: 0 0 0 3px rgba(159, 232, 112, 0.35);
+}
+
+/* Responsive Journal Row Layout on Mobile */
+@media (max-width: 640px) {
+  .bento-card,
+  .bento-card-lime {
+    border-radius: 20px;
+  }
+
+  .journal-line-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .journal-line-account {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Data Table & Expandable Rows */
+.kronos-table th {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.kronos-table tbody tr {
+  transition: background-color 0.14s ease;
+}
+
+.kronos-table tbody tr:hover {
+  background-color: #F9FAFB;
+}
+
+.badge-low-stock {
+  background-color: #FEF3C7;
+  color: #B45309;
+}
+
+.badge-out-stock {
+  background-color: #FEE2E2;
+  color: #DC2626;
+}
+
+/* Print Media Queries (Invoice & Financial Reports) */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  body {
+    background-color: #FFFFFF !important;
+    color: #111827 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  header,
+  footer,
+  .no-print,
+  #toast-container,
+  #status-banner {
+    display: none !important;
+  }
+
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .bento-card,
+  .print-sheet {
+    border: 1px solid #D1D5DB !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .print-break-inside-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+

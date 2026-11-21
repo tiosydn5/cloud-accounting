@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventori &amp; HPP — Kronos Ledger</title>
+  <meta
+    name="description"
+    content="Manajemen Inventori, Nilai Persediaan, dan Kalkulasi HPP terintegrasi Double-Entry di Kronos Ledger."
+  />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Poppins', 'sans-serif'] },
+          colors: {
+            kronos: {
+              canvas: '#F3F4F1',
+              surface: '#FFFFFF',
+              border: '#E5E7EB',
+              dark: '#14281D',
+              lime: '#9FE870'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="bg-[#F3F4F1] text-[#111827] min-h-screen flex flex-col">
+  <!-- Top Floating Navigation Bar -->
+  <header class="sticky top-0 z-30 bg-[#F3F4F1]/90 backdrop-blur-md border-b border-[#E5E7EB]/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <a href="index.html" data-nav-link class="flex items-center gap-2.5 shrink-0">
+          <div class="w-9 h-9 rounded-2xl bg-[#14281D] flex items-center justify-center shadow-sm">
+            <svg class="w-5 h-5 text-[#9FE870]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 7h16M4 12h10M4 17h7" />
+              <circle cx="17.5" cy="14.5" r="3.5" />
+            </svg>
+          </div>
+          <div class="leading-tight">
+            <span class="block text-sm sm:text-base font-bold tracking-tight text-[#14281D]">Kronos Ledger</span>
+            <span class="block text-[11px] font-medium text-[#6B7280]">Double-Entry ERP</span>
+          </div>
+        </a>
+
+        <nav aria-label="Navigasi Utama" class="hidden lg:flex items-center gap-1 bg-white border border-[#E5E7EB] rounded-full p-1 shadow-xs">
+          <a href="index.html" data-nav-link class="nav-pill">Overview</a>
+          <a href="ledger.html" data-nav-link class="nav-pill">Jurnal &amp; Kas</a>
+          <a href="invoices.html" data-nav-link class="nav-pill">Invoice &amp; Piutang</a>
+          <a href="inventory.html" data-nav-link class="nav-pill is-active" aria-current="page">
+            <span class="nav-dot w-1.5 h-1.5 rounded-full"></span>
+            Inventori &amp; HPP
+          </a>
+          <a href="reports.html" data-nav-link class="nav-pill">Laporan</a>
+          <a href="audit-logs.html" data-nav-link class="nav-pill">Audit Log</a>
+          <a href="settings.html" data-nav-link class="nav-pill">Pengaturan</a>
+        </nav>
+
+        <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          <span id="connection-badge" class="status-badge bg-white border border-[#E5E7EB] text-[#14281D]">
+            <span id="connection-dot" class="w-2 h-2 rounded-full bg-[#14281D]"></span>
+            <span id="connection-label">Demo Preview</span>
+          </span>
+
+          <div class="relative">
+            <label for="org-switcher" class="sr-only">Pilih Organisasi</label>
+            <select
+              id="org-switcher"
+              class="bg-white border border-[#E5E7EB] rounded-full pl-3.5 pr-8 py-1.5 text-xs sm:text-[13px] font-medium text-[#111827] outline-none focus:border-[#14281D] cursor-pointer max-w-[170px] sm:max-w-[220px] truncate"
+            >
+              <option value="">Memuat organisasi...</option>
+            </select>
+          </div>
+
+          <div class="segmented-control" role="group" aria-label="Mode Koneksi">
+            <button type="button" id="mode-demo-btn" class="segmented-btn is-selected">Demo</button>
+            <button type="button" id="mode-live-btn" class="segmented-btn">Live</button>
+          </div>
+        </div>
+      </div>
+
+      <nav aria-label="Navigasi Mobile" class="flex lg:hidden items-center gap-1.5 mt-2.5 pb-1 overflow-x-auto no-scrollbar">
+        <a href="index.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Overview</a>
+        <a href="ledger.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Jurnal &amp; Kas</a>
+        <a href="invoices.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Invoice &amp; Piutang</a>
+        <a href="inventory.html" data-nav-link class="nav-pill is-active text-xs px-3 py-1.5">
+          <span class="nav-dot w-1.5 h-1.5 rounded-full"></span>
+          Inventori &amp; HPP
+        </a>
+        <a href="reports.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Laporan</a>
+        <a href="audit-logs.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Audit Log</a>
+        <a href="settings.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Pengaturan</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+      <div>
+        <p class="text-xs font-medium uppercase tracking-wider text-[#6B7280]">Persediaan Barang &amp; Mesin HPP (COGS)</p>
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-[#111827] mt-0.5">
+          <span id="active-org-heading">PT Kronos Karya Nusantara</span>
+        </h1>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <span id="active-role-pill" class="text-xs font-medium px-3 py-1.5 rounded-full bg-white border border-[#E5E7EB] text-[#6B7280]">
+          Peran: <strong class="text-[#14281D] capitalize">owner</strong>
+        </span>
+        <button
+          type="button"
+          id="btn-reset-demo"
+          class="hidden text-xs font-medium px-3 py-1.5 rounded-full bg-white border border-[#E5E7EB] text-[#6B7280] hover:text-[#111827] transition"
+        >
+          Reset Demo
+        </button>
+        <button type="button" id="btn-open-stock-move" class="btn-secondary px-4 py-2 text-xs sm:text-sm">
+          Pembelian / Penyesuaian Stok
+        </button>
+        <button type="button" id="btn-open-new-product" class="btn-primary px-4 py-2 text-xs sm:text-sm">
+          <svg class="w-4 h-4 text-[#9FE870]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Tambah Produk
+        </button>
+      </div>
+    </div>
+
+    <!-- Non-blocking Fallback Banner -->
+    <div id="status-banner" class="hidden rounded-2xl border px-4 py-3 text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <p id="status-banner-text" class="leading-relaxed"></p>
+      <button type="button" id="banner-dismiss-btn" class="px-2.5 py-1 rounded-full text-xs font-medium text-[#6B7280] hover:text-[#111827] self-end sm:self-center">
+        Tutup
+      </button>
+    </div>
+
+    <!-- KPI Cards -->
+    <section aria-label="Ringkasan Inventori" class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <article class="bento-card-lime p-5">
+        <p class="text-xs font-semibold text-[#14281D]/80">Total Nilai Inventori</p>
+        <p id="inv-val-total" class="text-xl sm:text-2xl font-bold text-[#14281D] tabular-nums mt-1.5">Rp 0</p>
+        <p id="inv-val-coa-note" class="text-[11px] font-medium text-[#14281D]/75 mt-1">Saldo Akun 1301: Rp 0</p>
+      </article>
+      <article class="bento-card p-5">
+        <p class="text-xs font-medium text-[#6B7280]">Total SKU Aktif</p>
+        <p id="inv-sku-count" class="text-2xl font-bold text-[#111827] tabular-nums mt-1.5">0</p>
+        <p id="inv-units-total" class="text-[11px] text-[#6B7280] mt-1">0 unit tersedia</p>
+      </article>
+      <article class="bento-card p-5">
+        <p class="text-xs font-medium text-[#6B7280]">Stok Menipis</p>
+        <p id="inv-low-count" class="text-2xl font-bold text-[#B45309] tabular-nums mt-1.5">0</p>
+        <p class="text-[11px] text-[#6B7280] mt-1">Perlu restock segera</p>
+      </article>
+      <article class="bento-card p-5">
+        <p class="text-xs font-medium text-[#6B7280]">Potensi Nilai Jual</p>
+        <p id="inv-retail-total" class="text-xl sm:text-2xl font-bold text-[#14281D] tabular-nums mt-1.5">Rp 0</p>
+        <p class="text-[11px] text-[#6B7280] mt-1">Estimasi harga jual katalog</p>
+      </article>
+    </section>
+
+    <!-- Filter Bar -->
+    <section aria-label="Filter Produk" class="bento-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="flex items-center gap-1.5">
+        <button type="button" data-prod-filter="ALL" class="prod-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#14281D] text-white transition">Semua Produk</button>
+        <button type="button" data-prod-filter="LOW" class="prod-filter-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-[#F3F4F1] text-[#6B7280] hover:text-[#111827] transition">Stok Menipis</button>
+      </div>
+      <div class="w-full sm:w-72">
+        <label for="prod-search" class="sr-only">Cari SKU atau Nama Produk</label>
+        <input type="search" id="prod-search" placeholder="Cari SKU atau nama barang..." class="kronos-input text-xs sm:text-sm py-2" />
+      </div>
+    </section>
+
+    <!-- Products Table -->
+    <section aria-label="Daftar Produk Inventori" class="bento-card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="kronos-table w-full text-left border-collapse">
+          <thead class="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+            <tr>
+              <th class="py-3.5 px-4 sm:px-5">SKU &amp; Nama Item</th>
+              <th class="py-3.5 px-4 text-right">Stok</th>
+              <th class="py-3.5 px-4 text-right">HPP / Unit</th>
+              <th class="py-3.5 px-4 text-right hidden sm:table-cell">Harga Jual</th>
+              <th class="py-3.5 px-4 text-right">Nilai Inventori</th>
+              <th class="py-3.5 px-4 sm:px-5 text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody" class="divide-y divide-[#E5E7EB]/80">
+            <!-- Populated by inventory.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 text-[11px] text-[#6B7280] flex flex-col sm:flex-row items-center justify-between gap-2">
+    <span>Kronos Ledger &mdash; Manajemen Inventori &amp; HPP</span>
+    <span>Pembelian &amp; penyesuaian stok langsung membentuk jurnal 1301 Persediaan</span>
+  </footer>
+
+  <!-- MODAL: Tambah Produk Baru -->
+  <div
+    id="product-modal"
+    class="hidden fixed inset-0 z-50 modal-backdrop flex items-end sm:items-center justify-center p-0 sm:p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="product-modal-title"
+  >
+    <div class="modal-panel bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl border border-[#E5E7EB] shadow-2xl overflow-hidden">
+      <div class="px-5 sm:px-6 pt-5 pb-4 border-b border-[#E5E7EB] flex items-center justify-between">
+        <div>
+          <h2 id="product-modal-title" class="text-base font-bold text-[#111827]">Tambah Produk / Item Baru</h2>
+          <p class="text-xs text-[#6B7280]">Stok awal &gt; 0 otomatis dicatat ke akun 1301 Persediaan</p>
+        </div>
+        <button type="button" id="product-modal-close" aria-label="Tutup modal produk" class="w-8 h-8 rounded-full bg-[#F3F4F1] hover:bg-gray-200 flex items-center justify-center">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+        </button>
+      </div>
+
+      <form id="new-product-form" class="p-5 sm:p-6 space-y-3.5" novalidate>
+        <div id="product-modal-error" class="hidden rounded-2xl bg-red-50 border border-red-200 text-red-700 px-3.5 py-2 text-xs font-medium"></div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label for="prod-sku" class="block text-xs font-medium text-[#6B7280] mb-1">SKU *</label>
+            <input type="text" id="prod-sku" required placeholder="SCN-2D-01" class="kronos-input text-xs sm:text-sm uppercase" />
+          </div>
+          <div class="sm:col-span-2">
+            <label for="prod-name" class="block text-xs font-medium text-[#6B7280] mb-1">Nama Produk *</label>
+            <input type="text" id="prod-name" required placeholder="Barcode Scanner 2D USB" class="kronos-input text-xs sm:text-sm" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label for="prod-cost" class="block text-xs font-medium text-[#6B7280] mb-1">HPP / Modal (Rp)</label>
+            <input type="number" id="prod-cost" min="0" step="any" value="0" class="kronos-input text-xs sm:text-sm text-right tabular-nums" />
+          </div>
+          <div>
+            <label for="prod-sell" class="block text-xs font-medium text-[#6B7280] mb-1">Harga Jual (Rp)</label>
+            <input type="number" id="prod-sell" min="0" step="any" value="0" class="kronos-input text-xs sm:text-sm text-right tabular-nums" />
+          </div>
+          <div>
+            <label for="prod-qty" class="block text-xs font-medium text-[#6B7280] mb-1">Stok Awal</label>
+            <input type="number" id="prod-qty" min="0" step="1" value="0" class="kronos-input text-xs sm:text-sm text-right tabular-nums" />
+          </div>
+        </div>
+
+        <div>
+          <label for="prod-init-counter" class="block text-xs font-medium text-[#6B7280] mb-1">Akun Lawan Stok Awal (Kredit, jika stok awal &gt; 0)</label>
+          <select id="prod-init-counter" class="kronos-input text-xs sm:text-sm"></select>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" id="btn-cancel-product" class="btn-secondary px-4 py-2 text-xs">Batal</button>
+          <button type="submit" id="btn-submit-product" class="btn-primary px-5 py-2 text-xs">Simpan Produk</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Pembelian / Penyesuaian Stok (Double-Entry) -->
+  <div
+    id="stock-modal"
+    class="hidden fixed inset-0 z-50 modal-backdrop flex items-end sm:items-center justify-center p-0 sm:p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="stock-modal-title"
+  >
+    <div class="modal-panel bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl border border-[#E5E7EB] shadow-2xl overflow-hidden">
+      <div class="px-5 sm:px-6 pt-5 pb-4 border-b border-[#E5E7EB] flex items-center justify-between">
+        <div>
+          <h2 id="stock-modal-title" class="text-base font-bold text-[#111827]">Pembelian &amp; Penyesuaian Stok</h2>
+          <p class="text-xs text-[#6B7280]">Otomatis mencatat jurnal berimbang (Debit === Kredit)</p>
+        </div>
+        <button type="button" id="stock-modal-close" aria-label="Tutup modal stok" class="w-8 h-8 rounded-full bg-[#F3F4F1] hover:bg-gray-200 flex items-center justify-center">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+        </button>
+      </div>
+
+      <form id="stock-move-form" class="p-5 sm:p-6 space-y-3.5" novalidate>
+        <div id="stock-modal-error" class="hidden rounded-2xl bg-red-50 border border-red-200 text-red-700 px-3.5 py-2 text-xs font-medium"></div>
+
+        <div>
+          <label for="stk-product" class="block text-xs font-medium text-[#6B7280] mb-1">Pilih Produk *</label>
+          <select id="stk-product" class="kronos-input text-xs sm:text-sm"></select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label for="stk-type" class="block text-xs font-medium text-[#6B7280] mb-1">Jenis Mutasi</label>
+            <select id="stk-type" class="kronos-input text-xs sm:text-sm">
+              <option value="PURCHASE">Pembelian Stok (+)</option>
+              <option value="IN">Penyesuaian Masuk (+)</option>
+              <option value="OUT">Pemakaian / Keluar (-)</option>
+            </select>
+          </div>
+          <div>
+            <label for="stk-qty" class="block text-xs font-medium text-[#6B7280] mb-1">Jumlah Unit *</label>
+            <input type="number" id="stk-qty" min="1" step="1" value="1" required class="kronos-input text-xs sm:text-sm text-right tabular-nums" />
+          </div>
+          <div>
+            <label for="stk-cost" class="block text-xs font-medium text-[#6B7280] mb-1">HPP / Unit (Rp)</label>
+            <input type="number" id="stk-cost" min="0" step="any" value="0" class="kronos-input text-xs sm:text-sm text-right tabular-nums" />
+          </div>
+        </div>
+
+        <div>
+          <label for="stk-counter" class="block text-xs font-medium text-[#6B7280] mb-1">Akun Lawan Jurnal</label>
+          <select id="stk-counter" class="kronos-input text-xs sm:text-sm"></select>
+        </div>
+
+        <div>
+          <label for="stk-note" class="block text-xs font-medium text-[#6B7280] mb-1">Catatan (Opsional)</label>
+          <input type="text" id="stk-note" placeholder="Contoh: Restock dari distributor resmi" class="kronos-input text-xs sm:text-sm" />
+        </div>
+
+        <!-- Live Double-Entry Preview -->
+        <div class="rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-3.5 space-y-1.5 text-xs tabular-nums">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold text-[#111827]">Pratinjau Jurnal Persediaan</span>
+            <span id="stk-balance-badge" class="status-badge badge-posted">Balance</span>
+          </div>
+          <div id="stk-journal-preview" class="space-y-1 text-[#6B7280]"></div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-1">
+          <button type="button" id="btn-cancel-stock" class="btn-secondary px-4 py-2 text-xs">Batal</button>
+          <button type="submit" id="btn-submit-stock" class="btn-primary px-5 py-2 text-xs">Catat Mutasi Stok</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-[calc(100%-2rem)] sm:w-auto pointer-events-none"></div>
+
+  <script type="module" src="assets/js/inventory.js"></script>
+</body>
+</html>

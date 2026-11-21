@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laporan Keuangan — Kronos Ledger</title>
+  <meta
+    name="description"
+    content="Laporan Keuangan Real-Time Kronos Ledger: Laba Rugi, Neraca Ringkas, Neraca Saldo (Trial Balance), Export CSV, dan Cetak PDF."
+  />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Poppins', 'sans-serif'] },
+          colors: {
+            kronos: {
+              canvas: '#F3F4F1',
+              surface: '#FFFFFF',
+              border: '#E5E7EB',
+              dark: '#14281D',
+              lime: '#9FE870'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="bg-[#F3F4F1] text-[#111827] min-h-screen flex flex-col">
+  <!-- Top Floating Navigation Bar -->
+  <header class="sticky top-0 z-30 bg-[#F3F4F1]/90 backdrop-blur-md border-b border-[#E5E7EB]/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <a href="index.html" data-nav-link class="flex items-center gap-2.5 shrink-0">
+          <div class="w-9 h-9 rounded-2xl bg-[#14281D] flex items-center justify-center shadow-sm">
+            <svg class="w-5 h-5 text-[#9FE870]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 7h16M4 12h10M4 17h7" />
+              <circle cx="17.5" cy="14.5" r="3.5" />
+            </svg>
+          </div>
+          <div class="leading-tight">
+            <span class="block text-sm sm:text-base font-bold tracking-tight text-[#14281D]">Kronos Ledger</span>
+            <span class="block text-[11px] font-medium text-[#6B7280]">Double-Entry ERP</span>
+          </div>
+        </a>
+
+        <nav aria-label="Navigasi Utama" class="hidden lg:flex items-center gap-1 bg-white border border-[#E5E7EB] rounded-full p-1 shadow-xs">
+          <a href="index.html" data-nav-link class="nav-pill">Overview</a>
+          <a href="ledger.html" data-nav-link class="nav-pill">Jurnal &amp; Kas</a>
+          <a href="invoices.html" data-nav-link class="nav-pill">Invoice &amp; Piutang</a>
+          <a href="inventory.html" data-nav-link class="nav-pill">Inventori &amp; HPP</a>
+          <a href="reports.html" data-nav-link class="nav-pill is-active" aria-current="page">
+            <span class="nav-dot w-1.5 h-1.5 rounded-full"></span>
+            Laporan
+          </a>
+          <a href="audit-logs.html" data-nav-link class="nav-pill">Audit Log</a>
+          <a href="settings.html" data-nav-link class="nav-pill">Pengaturan</a>
+        </nav>
+
+        <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          <span id="connection-badge" class="status-badge bg-white border border-[#E5E7EB] text-[#14281D]">
+            <span id="connection-dot" class="w-2 h-2 rounded-full bg-[#14281D]"></span>
+            <span id="connection-label">Demo Preview</span>
+          </span>
+
+          <div class="relative">
+            <label for="org-switcher" class="sr-only">Pilih Organisasi</label>
+            <select
+              id="org-switcher"
+              class="bg-white border border-[#E5E7EB] rounded-full pl-3.5 pr-8 py-1.5 text-xs sm:text-[13px] font-medium text-[#111827] outline-none focus:border-[#14281D] cursor-pointer max-w-[170px] sm:max-w-[220px] truncate"
+            >
+              <option value="">Memuat organisasi...</option>
+            </select>
+          </div>
+
+          <div class="segmented-control" role="group" aria-label="Mode Koneksi">
+            <button type="button" id="mode-demo-btn" class="segmented-btn is-selected">Demo</button>
+            <button type="button" id="mode-live-btn" class="segmented-btn">Live</button>
+          </div>
+        </div>
+      </div>
+
+      <nav aria-label="Navigasi Mobile" class="flex lg:hidden items-center gap-1.5 mt-2.5 pb-1 overflow-x-auto no-scrollbar">
+        <a href="index.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Overview</a>
+        <a href="ledger.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Jurnal &amp; Kas</a>
+        <a href="invoices.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Invoice &amp; Piutang</a>
+        <a href="inventory.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Inventori &amp; HPP</a>
+        <a href="reports.html" data-nav-link class="nav-pill is-active text-xs px-3 py-1.5">
+          <span class="nav-dot w-1.5 h-1.5 rounded-full"></span>
+          Laporan
+        </a>
+        <a href="audit-logs.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Audit Log</a>
+        <a href="settings.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Pengaturan</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+      <div>
+        <p class="text-xs font-medium uppercase tracking-wider text-[#6B7280]">Laporan Keuangan Standar</p>
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-[#111827] mt-0.5">
+          <span id="active-org-heading">PT Kronos Karya Nusantara</span>
+        </h1>
+        <p id="report-generated-at" class="text-xs text-[#6B7280] mt-0.5">Per posisi saldo terkini</p>
+      </div>
+
+      <div class="no-print flex items-center gap-2 flex-wrap">
+        <button type="button" id="btn-copy-summary" class="btn-secondary px-3.5 py-2 text-xs">Salin Ringkasan</button>
+        <button type="button" id="btn-export-csv" class="btn-secondary px-3.5 py-2 text-xs">Export CSV</button>
+        <button type="button" id="btn-print-reports" class="btn-primary px-4 py-2 text-xs">Cetak / Simpan PDF</button>
+      </div>
+    </div>
+
+    <!-- Non-blocking Fallback Banner -->
+    <div id="status-banner" class="hidden rounded-2xl border px-4 py-3 text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <p id="status-banner-text" class="leading-relaxed"></p>
+      <button type="button" id="banner-dismiss-btn" class="px-2.5 py-1 rounded-full text-xs font-medium text-[#6B7280] hover:text-[#111827] self-end sm:self-center">
+        Tutup
+      </button>
+    </div>
+
+    <!-- Report Section Tabs -->
+    <div class="no-print flex items-center justify-between flex-wrap gap-3">
+      <div class="flex items-center gap-1.5 flex-wrap" role="group" aria-label="Pilih Jenis Laporan">
+        <button type="button" data-report-tab="ALL" class="report-tab-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#14281D] text-white transition">Semua Laporan</button>
+        <button type="button" data-report-tab="INCOME" class="report-tab-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-[#E5E7EB] text-[#6B7280] hover:text-[#111827] transition">Laba Rugi</button>
+        <button type="button" data-report-tab="BALANCE" class="report-tab-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-[#E5E7EB] text-[#6B7280] hover:text-[#111827] transition">Neraca</button>
+        <button type="button" data-report-tab="TRIAL" class="report-tab-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-white border border-[#E5E7EB] text-[#6B7280] hover:text-[#111827] transition">Neraca Saldo (CoA)</button>
+      </div>
+      <span id="active-role-pill" class="text-xs font-medium px-3 py-1 rounded-full bg-white border border-[#E5E7EB] text-[#6B7280]">
+        Peran: <strong class="text-[#14281D] capitalize">owner</strong>
+      </span>
+    </div>
+
+    <!-- 1. INCOME STATEMENT (Laba Rugi) -->
+    <section id="section-income" aria-label="Laporan Laba Rugi" class="bento-card p-5 sm:p-7 space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[#E5E7EB]">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-[#111827]">Laporan Laba Rugi (Income Statement)</h2>
+          <p class="text-xs text-[#6B7280]">Pendapatan &minus; HPP &minus; Beban Operasional = Laba Bersih</p>
+        </div>
+        <span id="rep-net-margin" class="status-badge bg-[#E9FAD9] text-[#14281D] tabular-nums self-start sm:self-center">
+          Net Margin 0%
+        </span>
+      </div>
+
+      <div id="income-statement-body" class="space-y-4 text-xs sm:text-sm">
+        <!-- Populated by reports.js -->
+      </div>
+    </section>
+
+    <!-- 2. BALANCE SHEET (Neraca Ringkas) -->
+    <section id="section-balance" aria-label="Neraca Ringkas" class="bento-card p-5 sm:p-7 space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[#E5E7EB]">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-[#111827]">Neraca Ringkas (Balance Sheet)</h2>
+          <p class="text-xs text-[#6B7280]">Validasi persamaan: Aset = Liabilitas + Ekuitas + Laba Berjalan</p>
+        </div>
+        <span id="rep-bs-status" class="status-badge badge-posted self-start sm:self-center">
+          Seimbang (Balance)
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="balance-sheet-body">
+        <!-- Populated by reports.js -->
+      </div>
+    </section>
+
+    <!-- 3. TRIAL BALANCE (Ringkasan Saldo Akun CoA) -->
+    <section id="section-trial" aria-label="Neraca Saldo" class="bento-card overflow-hidden">
+      <div class="p-5 sm:p-6 border-b border-[#E5E7EB] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-[#111827]">Neraca Saldo (Trial Balance)</h2>
+          <p class="text-xs text-[#6B7280]">Ringkasan saldo seluruh akun CoA aktif</p>
+        </div>
+        <span id="rep-tb-status" class="status-badge badge-posted self-start sm:self-center">
+          Total Debit = Kredit
+        </span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="kronos-table w-full text-left border-collapse">
+          <thead class="bg-[#F9FAFB] border-b border-[#E5E7EB]">
+            <tr>
+              <th class="py-3 px-4 sm:px-6">Kode</th>
+              <th class="py-3 px-4">Nama Akun</th>
+              <th class="py-3 px-4 hidden sm:table-cell">Kategori</th>
+              <th class="py-3 px-4 text-right">Debit</th>
+              <th class="py-3 px-4 sm:px-6 text-right">Kredit</th>
+            </tr>
+          </thead>
+          <tbody id="trial-balance-tbody" class="divide-y divide-[#E5E7EB]/70">
+            <!-- Populated by reports.js -->
+          </tbody>
+          <tfoot class="border-t-2 border-[#14281D]/20 bg-[#F9FAFB]">
+            <tr>
+              <td colspan="2" class="py-3.5 px-4 sm:px-6 text-xs sm:text-sm font-bold text-[#111827]">Total Neraca Saldo</td>
+              <td class="hidden sm:table-cell"></td>
+              <td id="tb-total-debit" class="py-3.5 px-4 text-xs sm:text-sm font-bold text-right text-[#15803D] tabular-nums">Rp 0</td>
+              <td id="tb-total-credit" class="py-3.5 px-4 sm:px-6 text-xs sm:text-sm font-bold text-right text-[#DC2626] tabular-nums">Rp 0</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 text-[11px] text-[#6B7280] flex flex-col sm:flex-row items-center justify-between gap-2">
+    <span>Kronos Ledger &mdash; Laporan Keuangan Otomatis</span>
+    <span>Dihitung real-time dari buku besar double-entry</span>
+  </footer>
+
+  <div id="toast-container" class="no-print fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-[calc(100%-2rem)] sm:w-auto pointer-events-none"></div>
+
+  <script type="module" src="assets/js/reports.js"></script>
+</body>
+</html>

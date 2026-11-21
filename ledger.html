@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jurnal &amp; Buku Besar — Kronos Ledger</title>
+  <meta
+    name="description"
+    content="Buku Besar dan Jurnal Umum Double-Entry Kronos Ledger: filter akun CoA, pencarian transaksi, approval, void, dan pencatatan jurnal berimbang."
+  />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    window.tailwind = window.tailwind || {};
+    window.tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Poppins', 'sans-serif'] },
+          colors: {
+            kronos: {
+              canvas: '#F3F4F1',
+              surface: '#FFFFFF',
+              border: '#E5E7EB',
+              dark: '#14281D',
+              lime: '#9FE870'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="bg-[#F3F4F1] text-[#111827] min-h-screen flex flex-col">
+  <!-- Top Floating Navigation Bar -->
+  <header class="sticky top-0 z-30 bg-[#F3F4F1]/90 backdrop-blur-md border-b border-[#E5E7EB]/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <a href="index.html" data-nav-link class="flex items-center gap-2.5 shrink-0">
+          <div class="w-9 h-9 rounded-2xl bg-[#14281D] flex items-center justify-center shadow-sm">
+            <svg class="w-5 h-5 text-[#9FE870]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 7h16M4 12h10M4 17h7" />
+              <circle cx="17.5" cy="14.5" r="3.5" />
+            </svg>
+          </div>
+          <div class="leading-tight">
+            <span class="block text-sm sm:text-base font-bold tracking-tight text-[#14281D]">Kronos Ledger</span>
+            <span class="block text-[11px] font-medium text-[#6B7280]">Double-Entry ERP</span>
+          </div>
+        </a>
+
+        <nav aria-label="Navigasi Utama" class="hidden lg:flex items-center gap-1 bg-white border border-[#E5E7EB] rounded-full p-1 shadow-xs">
+          <a href="index.html" data-nav-link class="nav-pill">Overview</a>
+          <a href="ledger.html" data-nav-link class="nav-pill is-active" aria-current="page">
+            <span class="nav-dot w-1.5 h-1.5 rounded-full"></span>
+            Jurnal &amp; Kas
+          </a>
+          <a href="invoices.html" data-nav-link class="nav-pill">Invoice &amp; Piutang</a>
+          <a href="inventory.html" data-nav-link class="nav-pill">Inventori &amp; HPP</a>
+          <a href="reports.html" data-nav-link class="nav-pill">Laporan</a>
+          <a href="audit-logs.html" data-nav-link class="nav-pill">Audit Log</a>
+          <a href="settings.html" data-nav-link class="nav-pill">Pengaturan</a>
+        </nav>
+
+        <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          <span id="connection-badge" class="status-badge bg-white border border-[#E5E7EB] text-[#14281D]">
+            <span id="connection-dot" class="w-2 h-2 rounded-full bg-[#14281D]"></span>
+            <span id="connection-label">Demo Preview</span>
+          </span>
+
+          <div class="relative">
+            <label for="org-switcher" class="sr-only">Pilih Organisasi</label>
+            <select
+              id="org-switcher"
+              class="bg-white border border-[#E5E7EB] rounded-full pl-3.5 pr-8 py-1.5 text-xs sm:text-[13px] font-medium text-[#111827] outline-none focus:border-[#14281D] cursor-pointer max-w-[170px] sm:max-w-[220px] truncate"
+            >
+              <option value="">Memuat organisasi...</option>
+            </select>
+          </div>
+
+          <div class="segmented-control" role="group" aria-label="Mode Koneksi">
+            <button type="button" id="mode-demo-btn" class="segmented-btn is-selected">Demo</button>
+            <button type="button" id="mode-live-btn" class="segmented-btn">Live</button>
+          </div>
+        </div>
+      </div>
+
+      <nav aria-label="Navigasi Mobile" class="flex lg:hidden items-center gap-1.5 mt-2.5 pb-1 overflow-x-auto no-scrollbar">
+        <a href="index.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Overview</a>
+        <a href="ledger.html" data-nav-link class="nav-pill is-active text-xs px-3 py-1.5">
+          <span class="nav-dot w-1.5 h-1.5 rounded-full"></span>
+          Jurnal &amp; Kas
+        </a>
+        <a href="invoices.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Invoice &amp; Piutang</a>
+        <a href="inventory.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Inventori &amp; HPP</a>
+        <a href="reports.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Laporan</a>
+        <a href="audit-logs.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Audit Log</a>
+        <a href="settings.html" data-nav-link class="nav-pill bg-white border border-[#E5E7EB] text-xs px-3 py-1.5">Pengaturan</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+      <div>
+        <p class="text-xs font-medium uppercase tracking-wider text-[#6B7280]">Buku Besar &amp; Jurnal Umum</p>
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-[#111827] mt-0.5">
+          <span id="active-org-heading">PT Kronos Karya Nusantara</span>
+        </h1>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <span id="active-role-pill" class="text-xs font-medium px-3 py-1.5 rounded-full bg-white border border-[#E5E7EB] text-[#6B7280]">
+          Peran: <strong class="text-[#14281D] capitalize">owner</strong>
+        </span>
+        <button
+          type="button"
+          id="btn-reset-demo"
+          class="hidden text-xs font-medium px-3 py-1.5 rounded-full bg-white border border-[#E5E7EB] text-[#6B7280] hover:text-[#111827] transition"
+        >
+          Reset Demo
+        </button>
+        <button type="button" id="btn-open-new-journal" class="btn-primary px-4 py-2 text-xs sm:text-sm">
+          <svg class="w-4 h-4 text-[#9FE870]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Catat Jurnal Baru
+        </button>
+      </div>
+    </div>
+
+    <!-- Non-blocking Fallback Banner -->
+    <div id="status-banner" class="hidden rounded-2xl border px-4 py-3 text-xs sm:text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <p id="status-banner-text" class="leading-relaxed"></p>
+      <button type="button" id="banner-dismiss-btn" class="px-2.5 py-1 rounded-full text-xs font-medium text-[#6B7280] hover:text-[#111827] self-end sm:self-center">
+        Tutup
+      </button>
+    </div>
+
+    <!-- KPI Summary Strip -->
+    <section aria-label="Ringkasan Jurnal" class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <article class="bento-card p-4 sm:p-5">
+        <p class="text-xs font-medium text-[#6B7280]">Transaksi Ditampilkan</p>
+        <p id="stat-tx-count" class="text-2xl font-bold text-[#111827] tabular-nums mt-1.5">0</p>
+        <p id="stat-tx-sub" class="text-[11px] text-[#6B7280] mt-1">Dari total buku besar</p>
+      </article>
+      <article class="bento-card p-4 sm:p-5">
+        <p class="text-xs font-medium text-[#6B7280]">Volume Debit (Posted)</p>
+        <p id="stat-total-debit" class="text-lg sm:text-xl font-bold text-[#15803D] tabular-nums mt-1.5">Rp 0</p>
+        <p class="text-[11px] text-[#6B7280] mt-1">Akumulasi sisi debit aktif</p>
+      </article>
+      <article class="bento-card p-4 sm:p-5">
+        <p class="text-xs font-medium text-[#6B7280]">Volume Kredit (Posted)</p>
+        <p id="stat-total-credit" class="text-lg sm:text-xl font-bold text-[#DC2626] tabular-nums mt-1.5">Rp 0</p>
+        <p class="text-[11px] text-[#6B7280] mt-1">Akumulasi sisi kredit aktif</p>
+      </article>
+      <article class="bento-card p-4 sm:p-5">
+        <p id="stat-context-label" class="text-xs font-medium text-[#6B7280]">Menunggu Approval</p>
+        <p id="stat-context-value" class="text-2xl font-bold text-[#14281D] tabular-nums mt-1.5">0</p>
+        <p id="stat-context-sub" class="text-[11px] text-[#6B7280] mt-1">Entri berstatus PENDING</p>
+      </article>
+    </section>
+
+    <!-- Filter & Search Bar -->
+    <section aria-label="Filter Jurnal" class="bento-card p-4 sm:p-5 space-y-3.5">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+        <div class="md:col-span-5">
+          <label for="filter-search" class="block text-[11px] font-medium text-[#6B7280] mb-1">Cari Deskripsi / No. Referensi</label>
+          <input
+            type="search"
+            id="filter-search"
+            placeholder="Contoh: INV-001, Gaji, Modal, TRX..."
+            class="kronos-input text-xs sm:text-sm py-2"
+          />
+        </div>
+        <div class="md:col-span-4">
+          <label for="filter-account" class="block text-[11px] font-medium text-[#6B7280] mb-1">Filter Akun CoA</label>
+          <select id="filter-account" class="kronos-input text-xs sm:text-sm py-2">
+            <option value="ALL">Semua Akun CoA</option>
+          </select>
+        </div>
+        <div class="md:col-span-3 flex flex-col justify-end">
+          <div class="flex items-center gap-2">
+            <button type="button" id="btn-expand-all" class="btn-secondary flex-1 py-2 px-3 text-xs">Buka Semua</button>
+            <button type="button" id="btn-collapse-all" class="btn-secondary flex-1 py-2 px-3 text-xs">Tutup Semua</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-[#E5E7EB]/80">
+        <div class="flex items-center gap-1.5 flex-wrap" role="group" aria-label="Filter Status Transaksi">
+          <button type="button" data-status-filter="ALL" class="status-filter-btn px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#14281D] text-white transition">Semua</button>
+          <button type="button" data-status-filter="POSTED" class="status-filter-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-[#F3F4F1] text-[#6B7280] hover:text-[#111827] transition">POSTED</button>
+          <button type="button" data-status-filter="PENDING" class="status-filter-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-[#F3F4F1] text-[#6B7280] hover:text-[#111827] transition">PENDING</button>
+          <button type="button" data-status-filter="VOID" class="status-filter-btn px-3.5 py-1.5 rounded-full text-xs font-medium bg-[#F3F4F1] text-[#6B7280] hover:text-[#111827] transition">VOID</button>
+        </div>
+        <span id="filter-result-hint" class="text-xs text-[#6B7280]">Klik baris transaksi untuk melihat rincian Debit/Kredit.</span>
+      </div>
+    </section>
+
+    <!-- Ledger Entries List -->
+    <section aria-label="Daftar Transaksi Buku Besar" class="space-y-3" id="ledger-list">
+      <!-- Populated by ledger.js -->
+    </section>
+  </main>
+
+  <footer class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 text-[11px] text-[#6B7280] flex flex-col sm:flex-row items-center justify-between gap-2">
+    <span>Kronos Ledger &mdash; Buku Besar &amp; Jurnal Umum</span>
+    <span>Integritas Double-Entry: &Sigma; Debit = &Sigma; Kredit</span>
+  </footer>
+
+  <!-- MODAL: Catat Jurnal Double-Entry -->
+  <div
+    id="ledger-modal"
+    class="hidden fixed inset-0 z-50 modal-backdrop flex items-end sm:items-center justify-center p-0 sm:p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="ledger-modal-title"
+  >
+    <div class="modal-panel bg-white w-full sm:max-w-2xl rounded-t-3xl sm:rounded-3xl border border-[#E5E7EB] shadow-2xl max-h-[92vh] flex flex-col overflow-hidden">
+      <div class="px-5 sm:px-6 pt-5 pb-4 border-b border-[#E5E7EB] flex items-center justify-between gap-3">
+        <div>
+          <h2 id="ledger-modal-title" class="text-lg font-bold text-[#111827]">Catat Jurnal Umum</h2>
+          <p class="text-xs text-[#6B7280]">Wajib minimal 2 baris dan berimbang (Total Debit === Total Kredit)</p>
+        </div>
+        <button type="button" id="ledger-modal-close" aria-label="Tutup modal" class="w-9 h-9 rounded-full bg-[#F3F4F1] hover:bg-gray-200 flex items-center justify-center">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <form id="ledger-journal-form" class="p-5 sm:p-6 overflow-y-auto space-y-4" novalidate>
+        <div id="ledger-modal-error" class="hidden rounded-2xl bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 text-xs font-medium"></div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label for="jrn-date" class="block text-xs font-medium text-[#6B7280] mb-1">Tanggal</label>
+            <input type="date" id="jrn-date" required class="kronos-input text-xs sm:text-sm" />
+          </div>
+          <div>
+            <label for="jrn-ref" class="block text-xs font-medium text-[#6B7280] mb-1">No. Referensi</label>
+            <input type="text" id="jrn-ref" placeholder="JRN-015" class="kronos-input text-xs sm:text-sm" />
+          </div>
+          <div>
+            <label for="jrn-status" class="block text-xs font-medium text-[#6B7280] mb-1">Status</label>
+            <select id="jrn-status" class="kronos-input text-xs sm:text-sm">
+              <option value="POSTED">POSTED (Langsung Buku)</option>
+              <option value="PENDING">PENDING (Approval)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="jrn-desc" class="block text-xs font-medium text-[#6B7280] mb-1">Deskripsi Transaksi *</label>
+          <input type="text" id="jrn-desc" required placeholder="Contoh: Pembayaran tagihan internet bulanan" class="kronos-input text-xs sm:text-sm" />
+        </div>
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-[#111827]">Baris Jurnal</span>
+            <button type="button" id="btn-add-line" class="text-xs font-semibold text-[#14281D] bg-[#E9FAD9] hover:bg-[#9FE870]/60 px-3 py-1 rounded-full transition">
+              + Tambah Baris
+            </button>
+          </div>
+
+          <div class="hidden sm:grid sm:grid-cols-12 gap-2 px-1 text-[11px] font-medium text-[#6B7280]">
+            <div class="col-span-6">Akun CoA</div>
+            <div class="col-span-2 text-right">Debit (Rp)</div>
+            <div class="col-span-3 text-right">Kredit (Rp)</div>
+            <div class="col-span-1"></div>
+          </div>
+
+          <div id="jrn-lines-container" class="space-y-2"></div>
+        </div>
+
+        <div class="rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB] p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div class="flex items-center gap-4 text-xs tabular-nums">
+            <div>
+              <span class="text-[#6B7280] block text-[11px]">Total Debit</span>
+              <strong id="jrn-total-debit" class="text-[#15803D] text-sm">Rp 0</strong>
+            </div>
+            <div class="h-6 w-px bg-[#E5E7EB]"></div>
+            <div>
+              <span class="text-[#6B7280] block text-[11px]">Total Kredit</span>
+              <strong id="jrn-total-credit" class="text-[#DC2626] text-sm">Rp 0</strong>
+            </div>
+          </div>
+          <span id="jrn-balance-badge" class="status-badge badge-pending tabular-nums self-start sm:self-center">
+            Isi nominal Debit &amp; Kredit
+          </span>
+        </div>
+
+        <div class="flex items-center justify-end gap-2.5 pt-2">
+          <button type="button" id="btn-cancel-journal" class="btn-secondary px-4 py-2.5 text-xs sm:text-sm">Batal</button>
+          <button type="submit" id="btn-submit-journal" disabled class="btn-primary px-5 py-2.5 text-xs sm:text-sm">Simpan Jurnal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-[calc(100%-2rem)] sm:w-auto pointer-events-none"></div>
+
+  <script type="module" src="assets/js/ledger.js"></script>
+</body>
+</html>
